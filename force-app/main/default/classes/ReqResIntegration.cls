@@ -9,7 +9,9 @@ public class ReqResIntegration {
             req.setEndpoint(endpoint);
             req.setMethod(method);
             req.setHeader('Content-Type', contentType);
-            req.setBody(body);
+            if(String.isNotBlank(body)){
+                req.setBody(body);
+            }
             return req;
         }
     
@@ -33,9 +35,29 @@ public class ReqResIntegration {
             getContactNamesList(contacts));
     }
     
+    public static String getUsers(){
+        Http http = new Http();
+        HttpResponse res = http.send(createRequest(
+            'https://reqres.in/api/users?page=2',
+            'GET', 
+            'application/json', 
+            ''));
+        return res.getBody();
+    }
+    
+    public static Blob getUserAvatar(String endpoint) {
+        Http http = new Http();
+        HttpResponse res = http.send(createRequest(
+            endpoint,
+            'GET', 
+            'image/jpeg', 
+            ''));
+        return res.getBodyAsBlob();
+    }
+    
     private static String getContactNamesList(List<Contact> contacts) {
         List<Map<String, String>> names = new List<Map<String, String>>();
-        for(Contact contact : contacts){
+        for(Contact contact : contacts) {
             names.add(new Map<String, String>{'name' => contact.FirstName + ' ' + contact.LastName});
         }
         return JSON.serialize(names);
