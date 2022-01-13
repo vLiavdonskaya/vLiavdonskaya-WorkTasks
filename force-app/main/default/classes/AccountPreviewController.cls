@@ -16,7 +16,7 @@ public with sharing class AccountPreviewController {
     
     @AuraEnabled(cacheable=true)
     public static List<Account> getAccounts() {
-        return [SELECT Name, Type, Industry, CreatedDate 
+        return [SELECT Name, Type, Industry, CreatedDate, Contacts_Count__c
                 FROM Account 
                 WHERE Id IN : getAccessibleAccounts()];
     }
