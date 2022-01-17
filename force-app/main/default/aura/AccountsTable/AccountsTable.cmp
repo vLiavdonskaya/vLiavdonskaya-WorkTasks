@@ -3,19 +3,32 @@
   access="global"
   controller="AccountPreviewController"
 >
-  <aura:attribute name="data" type="Object"></aura:attribute>
-  <aura:attribute name="columns" type="Account[]"></aura:attribute>
+  <aura:method
+    name="getSearchQuery"
+    action="{! c.getSearchQuery}"
+    access="public"
+  >
+    <aura:attribute name="query" type="String" default=""></aura:attribute>
+  </aura:method>
+
+  <aura:attribute name="component" type="Aura.Component"></aura:attribute>
+  <aura:attribute name="accounts" type="Account[]"></aura:attribute>
+  <aura:attribute name="columns" type="List"></aura:attribute>
+  <aura:attribute name="draftValues" type="Account[]"></aura:attribute>
 
   <aura:handler name="init" value="{! this}" action="{! c.init}"></aura:handler>
 
-  <lightning:card variant="Narrow" title="Accounts" iconName="standard:account">
-    <div class="slds-p-around_x-small">
-      <lightning:datatable
-        keyField="id"
-        data="{! v.data}"
-        columns="{! v.columns}"
-        hideCheckboxColumn="true"
-      ></lightning:datatable>
-    </div>
-  </lightning:card>
+  <div class="slds-p-bottom_x-small">
+    <c:AccountsSearch component="{! this}"></c:AccountsSearch>
+  </div>
+  <lightning:datatable
+    aura:id="datatable"
+    keyField="Id"
+    data="{! v.accounts}"
+    columns="{! v.columns}"
+    draftValues="{! v.draftValues}"
+    onsave="{! c.handleSave}"
+    onrowselection="{! c.getRowId}"
+    maxRowSelection="1"
+  ></lightning:datatable>
 </aura:component>

@@ -1,12 +1,14 @@
 <aura:component
   implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"
 >
-  <div>
+  <aura:attribute name="component" type="Aura.Component"></aura:attribute>
+  <div onkeyup="{! c.handleKeyUp}">
     <lightning:input
-    aura:id
+      aura:id="search-input"
+      name="search-input"
       placeholder="Search..."
       type="search"
-      onkeyup="{! c.handleKeyUp}"
+      variant="label-hidden"
     ></lightning:input>
   </div>
 </aura:component>

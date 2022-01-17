@@ -1,3 +1,25 @@
-<aura:component>
-
-</aura:component>	
+<aura:component
+  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"
+  access="global"
+>
+  <aura:attribute name="recordId" type="String" default=""></aura:attribute>
+  <aura:attribute
+    name="fields"
+    type="String[]"
+    default="['Name', 'Type', 'Industry', 'Contacts_Count__c', 'CreatedDate']"
+  ></aura:attribute>
+  <lightning:recordForm
+    aura:id="recordForm"
+    recordId="{! v.recordId}"
+    objectApiName="Account"
+    columns="1"
+    fields="{! v.fields}"
+    mode="readonly"
+  >
+    <lightning:button
+      variant="brand"
+      type="submit"
+      label="Send Account"
+    ></lightning:button>
+  </lightning:recordForm>
+</aura:component>
