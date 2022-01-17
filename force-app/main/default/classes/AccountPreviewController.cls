@@ -16,8 +16,28 @@ public with sharing class AccountPreviewController {
     
     @AuraEnabled(cacheable=true)
     public static List<Account> getAccounts() {
-        return [SELECT Name, Type, Industry, CreatedDate, Contacts_Count__c
+        return [SELECT Id, Name, Type, Industry, CreatedDate, Contacts_Count__c
                 FROM Account 
                 WHERE Id IN : getAccessibleAccounts()];
+    }
+    
+    @AuraEnabled(cacheable=true)
+    public static List<Account> findAccounts(String query) {
+        List<Account> accounts = (List<Account>)[FIND :query
+                                                 RETURNING Account(Id, Name, Type, Industry, Contacts_Count__c, CreatedDate
+                                                                   WHERE Id IN : getAccessibleAccounts())][0];
+        return accounts;
+    }
+    
+    @AuraEnabled
+    public static List<Account> updateAccounts(List<Account> accounts) {
+        update accounts;
+        return getAccounts();
+    }
+    
+    @AuraEnabled
+    public static Integer sendAccounts(String accId) {
+        String accountName = [SELECT Name FROM Account WHERE Id =: accId].Name;
+        return ReqResIntegration.createAccounts(new Map<String, String>{'name' => accountName});
     }
 }

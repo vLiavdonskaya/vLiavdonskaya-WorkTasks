@@ -1,10 +1,12 @@
-## Task 3: 5h.
-1.	Add method to get users and users avatars from web service into "ReqResIntegration" class. - 30m
-2.	Create class "CreateContacts" to insert Contacts. - 2h 30m
-    1. Create method to parse users from json. - 30m
-    2. Create method to add parsed users as new Contacts. - 30m
-    3. Create method to add user avatar as attachment on Contact record. - 30m
-3.	Create class "CreateDocument" to add documents to ContentDocument table. - 1h
-4.	Test "ReqResIntegration" class. – 30m
-5.	Test "CreateDocument" class. – 30m
-6.  Test "CreateContacts" class. - 1h
+## Task 4: 7h.
+1.  Create controller for aura componenent. - 1h
+    - create method to get all Accounts for which current user has full access.
+    - create method to find Accounts.
+    - create method to save edited Accounts.
+    - create method to send Accounts.
+2.	Create a Datatable that fetches Accounts. - 1h
+3.  Add inline edit to Datatable. - 1h
+4.  Create search aura component. - 1h
+5.  Create modal window aura component to send Accounts. - 1h
+6.  Create Account form to view Account information. - 1h
+7.  Make tests for controller. - 1h
