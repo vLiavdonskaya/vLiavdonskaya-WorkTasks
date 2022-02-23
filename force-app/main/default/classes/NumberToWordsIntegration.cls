@@ -4,6 +4,7 @@ public class NumberToWordsIntegration {
   private static final String DA_PREFIX = 'soap';
   private static final String NTW_NAMESPACE = 'http://www.dataaccess.com/webservicesserver/';
 
+  // It can be moved to one line, we have enough space on the rigth size.
   private HttpRequest createRequest(
     String endpoint,
     String method,
@@ -14,21 +15,22 @@ public class NumberToWordsIntegration {
     req.setEndpoint(endpoint);
     req.setMethod(method);
     req.setHeader('Content-Type', headerValue);
+    // please, use {} for oneline conditions
     if (String.isNotBlank(body))
       req.setBody(body);
     return req;
   }
-
+// more clear naming for the method buildRequestBody
   private DOM.Document createXMLDocument(Integer digit) {
     DOM.Document doc = new DOM.Document();
-
+    //👍 
     DOM.XmlNode envelope = doc
       .createRootElement('Envelope', DA_NAMESPACE, DA_PREFIX)
       .addChildElement('Body', DA_NAMESPACE, DA_PREFIX)
       .addChildElement('NumberToWords', NTW_NAMESPACE, '')
       .addChildElement('ubiNum', null, null)
       .addTextNode(String.valueOf(digit));
-
+    
     return doc;
   }
 
@@ -53,6 +55,7 @@ public class NumberToWordsIntegration {
   }
 
   public void getDigit(Integer digit) {
+    // can be moved in one line
     HttpRequest req = createRequest(
       ENDPOINT,
       'POST',
