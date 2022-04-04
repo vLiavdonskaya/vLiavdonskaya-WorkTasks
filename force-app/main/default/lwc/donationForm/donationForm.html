@@ -1,0 +1,149 @@
+<template>
+  <div style="min-width: 480px">
+    <form>
+      <div id="Section#1">
+        <div class="slds-grid slds-gutters">
+          <div class="slds-col slds-size_3-of-12">
+            <label for="Amount" class="slds-form-element__label">{labels.Amount}
+              <abbr class="slds-required" title="Required"> *</abbr>
+            </label>
+            <lightning-input class="form-field" id="Amount" variant="label-hidden" type="number" min="10" required>
+            </lightning-input>
+          </div>
+          <div class="slds-col slds-size_4-of-12">
+            <label for="Campaign" class="slds-form-element__label">{labels.Campaign}
+              <abbr class="slds-required" title="Required"> *</abbr>
+            </label>
+            <lightning-combobox id='Campaign' class="form-field" placeholder="Select an Option..." options={campaigns}
+              value={comboboxes.Campaign} onchange={campaignChanged} variant="label-hidden" required>
+            </lightning-combobox>
+          </div>
+          <div class="slds-col slds-size_4-of-12">
+            <label for="Language" class="slds-form-element__label">{labels.Language}
+              <abbr class="slds-required" title="Required"> *</abbr>
+            </label>
+            <lightning-combobox id='Language' class="form-field" placeholder="Select an Option..." options={languages}
+              value={comboboxes.Language} onchange={languageChanged} variant="label-hidden" required>
+            </lightning-combobox>
+          </div>
+        </div>
+      </div>
+
+      <hr class="section-divider">
+
+      <div id="Section#2">
+        <div class="slds-grid slds-gutters slds-m-bottom_x-small">
+          <div class="slds-col slds-size_3-of-12">
+            <label for="Salutation" class="slds-form-element__label">{labels.Salutation}
+              <abbr class="slds-required" title="Required"> *</abbr>
+            </label>
+            <lightning-combobox id="Salutation" class="form-field" placeholder="Select an Option..."
+              options={salutations} value={comboboxes.Salutation} onchange={salutationChanged} variant="label-hidden" required>
+            </lightning-combobox>
+          </div>
+          <div class="slds-col slds-size_4-of-12">
+            <label for="CompanyName" class="slds-form-element__label">{labels.CompanyName}</label>
+            <lightning-input class="form-field" id="CompanyName" variant="label-hidden"></lightning-input>
+          </div>
+        </div>
+        <div class="slds-grid slds-gutters slds-m-bottom_x-small">
+          <div class="slds-col slds-size_4-of-12">
+            <label for="FirstName" class="slds-form-element__label">{labels.FirstName}
+              <abbr class="slds-required" title="Required"> *</abbr>
+            </label>
+            <lightning-input class="form-field" id="FirstName" variant="label-hidden" pattern="[^\+&amp;]*" required>
+            </lightning-input>
+          </div>
+          <div class="slds-col slds-size_4-of-12">
+            <label for="LastName" class="slds-form-element__label">{labels.LastName}
+              <abbr class="slds-required" title="Required"> *</abbr>
+            </label>
+            <lightning-input class='form-field' id="LastName" variant="label-hidden" pattern="[^\+&amp;]*" required>
+            </lightning-input>
+          </div>
+        </div>
+        <div class="slds-grid slds-gutters slds-m-bottom_x-small">
+          <div class="slds-col slds-size_4-of-12">
+            <label for="Street" class="slds-form-element__label">{labels.Street}
+              <abbr class="slds-required" title="Required"> *</abbr>
+            </label>
+            <lightning-input class="form-field" id="Street" variant="label-hidden" required></lightning-input>
+          </div>
+          <div class="slds-col slds-size_4-of-12">
+            <label for="PostalCodeComplement" class="slds-form-element__label">{labels.PostalCodeComplement}</label>
+            <lightning-input class="form-field" id="PostalCodeComplement" variant="label-hidden"></lightning-input>
+          </div>
+        </div>
+        <div class="slds-grid slds-gutters slds-m-bottom_x-small">
+          <div class="slds-col slds-size_2-of-12">
+            <label for="PostalCode" class="slds-form-element__label">{labels.PostalCode}
+              <abbr class="slds-required" title="Required"> *</abbr>
+            </label>
+            <lightning-input class="form-field" id="PostalCode" variant="label-hidden" pattern={postalCodePattern}
+              onchange={postalCodeEnter} required>
+            </lightning-input>
+          </div>
+          <div class="slds-col slds-size_4-of-12">
+            <label for="City" class="slds-form-element__label">{labels.City}
+              <abbr class="slds-required" title="Required"> *</abbr>
+            </label>
+            <lightning-input if:false={postalCodePattern} class="form-field" id="City" variant="label-hidden" required>
+            </lightning-input>
+            <lightning-combobox id="City1" class="form-field" if:true={postalCodePattern} options={cities}
+              value={comboboxes.City} variant="label-hidden" placeholder="Select an Option..." required>
+            </lightning-combobox>
+          </div>
+          <div class="slds-col slds-size_4-of-12">
+            <label for="County" class="slds-form-element__label">{labels.Country}
+              <abbr class="slds-required" title="Required"> *</abbr>
+            </label>
+            <lightning-combobox id="Country" class="form-field" placeholder="Select an Option..." options={countries}
+              value={comboboxes.Country} onchange={countryChanged} variant="label-hidden" required>
+            </lightning-combobox>
+          </div>
+        </div>
+      </div>
+
+      <hr class="section-divider">
+
+      <div id="Section#3">
+        <div class="slds-grid slds-gutters slds-m-bottom_x-small">
+          <div class="slds-col slds-size_3-of-12">
+            <div class="slds-grid">
+              <div class="slds-col slds-size_1-of-12 slds-p-horizontal_none">
+                <lightning-input class="form-field" id="SubscribeToNewsletter" variant="label-hidden" type="checkbox">
+                </lightning-input>
+              </div>
+              <div class="slds-col">
+                <label for="SubscribeToNewsletter"
+                  class="slds-form-element__label">{labels.SubscribeToNewsletter}</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="slds-grid slds-gutters slds-m-bottom_x-small">
+          <div class="slds-col slds-size_5-of-12">
+            <label for="Email" class="slds-form-element__label">{labels.Email}</label>
+            <lightning-input class="form-field" id="Email" variant="label-hidden" type="email"></lightning-input>
+          </div>
+          <div class="slds-col slds-size_4-of-12">
+            <label for="Phone" class="slds-form-element__label">{labels.Phone}</label>
+            <lightning-input class="form-field" id="Phone" variant="label-hidden" type="tel" pattern="[0-9\s\+]*">
+            </lightning-input>
+          </div>
+        </div>
+      </div>
+
+      <hr class="section-divider">
+
+      <div id="Section#4">
+        <div class="slds-clearfix">
+          <div class="slds-float_right">
+            <button class="slds-button slds-button_brand" onclick={createDonation}>{labels.Save}</button>
+          </div>
+        </div>
+      </div>
+    </form>
+
+  </div>
+</template>
