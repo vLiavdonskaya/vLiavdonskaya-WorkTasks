@@ -1,0 +1,33 @@
+<aura:component controller="AccountPreviewController">
+  <aura:attribute name="component" type="Aura.Component"></aura:attribute>
+  <aura:attribute name="recordId" type="String" default=""></aura:attribute>
+
+  <section role="dialog" aria-modal="true" class="slds-modal slds-fade-in-open">
+    <div class="slds-modal__container">
+      <lightning:card
+        variant="Narrow"
+        title="Accounts"
+        iconName="standard:logging"
+      >
+        <aura:set attribute="actions">
+          <lightning:buttonIcon
+            variant="bare"
+            iconName="utility:close"
+            onclick="{! c.passClose}"
+          />
+        </aura:set>
+        <div class="slds-p-around_x-small">
+          <c:AccountForm recordId="{! v.recordId}"></c:AccountForm>
+        </div>
+        <aura:set attribute="footer">
+          <lightning:button
+            label="Send Account"
+            variant="brand"
+            onclick="{! c.sendAccountHandler}"
+          />
+        </aura:set>
+      </lightning:card>
+    </div>
+  </section>
+  <div class="slds-backdrop slds-backdrop_open"></div>
+</aura:component>
