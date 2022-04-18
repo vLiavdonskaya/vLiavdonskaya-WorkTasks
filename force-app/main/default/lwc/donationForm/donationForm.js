@@ -1,67 +1,32 @@
-import { LightningElement, track } from "lwc";
-import { NavigationMixin } from "lightning/navigation";
-import Amount from '@salesforce/label/c.Amount';
-import Campaign from '@salesforce/label/c.Campaign';
-import Language from '@salesforce/label/c.Language';
-import Salutation from '@salesforce/label/c.Salutation';
-import CompanyName from '@salesforce/label/c.CompanyName';
-import FirstName from "@salesforce/label/c.FirstName";
-import LastName from "@salesforce/label/c.LastName";
-import Street from "@salesforce/label/c.Street";
-import PostalCodeComplement from '@salesforce/label/c.PostalCodeComplement';
-import PostalCode from "@salesforce/label/c.PostalCode";
-import City from "@salesforce/label/c.City";
-import Country from "@salesforce/label/c.Country";
-import SubscribeToNewsletter from "@salesforce/label/c.SubscribeToNewsletter";
-import Email from "@salesforce/label/c.Email";
-import Phone from "@salesforce/label/c.Phone";
+import { LightningElement, track, wire } from "lwc";
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import Save from "@salesforce/label/c.Save";
+
+import SALUTATION_FIELD from '@salesforce/schema/Contact.Salutation';
+import COUNTRY_FIELD from '@salesforce/schema/Contact.MailingCountryCode';
+import CONTACT_OBJECT from '@salesforce/schema/Contact';
+import { getPicklistValues } from "lightning/uiObjectInfoApi";
+import { getObjectInfo } from 'lightning/uiObjectInfoApi';
+
 import getCampaignList from "@salesforce/apex/DonationFormController.getCampaignList";
-import getSalutationList from "@salesforce/apex/DonationFormController.getSalutationList";
-import getCountryList from "@salesforce/apex/DonationFormController.getCountryList";
 import getLanguageList from "@salesforce/apex/DonationFormController.getLanguageList";
+import getMapOfLabelsPerObject from "@salesforce/apex/DonationFormController.getMapOfLabelsPerObject";
 
-export default class DonationForm extends NavigationMixin(LightningElement) {
-  labels = {
-    Amount,
-    Campaign,
-    Language,
-    Salutation,
-    CompanyName,
-    FirstName,
-    LastName,
-    Street,
-    PostalCodeComplement,
-    PostalCode,
-    City,
-    Country,
-    SubscribeToNewsletter,
-    Email,
-    Phone,
-    Save,
-  };
 
-  donationData = localStorage.getItem('Donation')
-    ? JSON.parse(localStorage.getItem('Donation')) : {};
+export default class DonationForm extends LightningElement {
 
+  @track hasRendered = true;
+  @track loading = false;
+  @track validated = false;
+  @track defaultCountry = 'CH';
+  @track donationData = {};
+  customLabels = { Save };
+  labels = {};
   campaigns = [];
   languages = [];
   salutations = [];
   countries = [];
-
-  postalCodePattern = '';
-
-  defaultCountry = 'CH';
-
-  @track comboboxes = {
-    Campaign: '',
-    Language: '',
-    Salutation: '',
-    City: '',
-    Country: this.defaultCountry
-  }
-
-  @track hasRendered = true;
+  cities = [];
   allCities = [
     { label: 'Zürich', value: 'Zürich', postalCode: { start: '8000', last: '8099' } },
     { label: 'Geneva', value: 'Geneva', postalCode: { start: '1200', last: '1227' } },
@@ -84,86 +49,100 @@ export default class DonationForm extends NavigationMixin(LightningElement) {
     { label: 'Uster', value: 'Uster', postalCode: { start: '8610', last: '8610' } },
     { label: 'Sion', value: 'Sion', postalCode: { start: '1950', last: '1993' } },
   ];
-  cities = [];
+  postalCodePattern = '';
 
-  renderedCallback() {
-    if (this.hasRendered) {
-      this.fillFields();
-      this.hasRendered = false;
+  connectedCallback() {
+    this.loading = true;
+  }
+
+  @wire(getObjectInfo, { objectApiName: CONTACT_OBJECT })
+  contactInfo;
+
+  @wire(getPicklistValues,
+    {
+      recordTypeId: '$contactInfo.data.defaultRecordTypeId',
+      fieldApiName: SALUTATION_FIELD
+    })
+  wiredSalutations({ error, data }) {
+    if (data) {
+      data.values.forEach(item => {
+        this.salutations = [...this.salutations, {
+          label: item.label,
+          value: item.value
+        }]
+      });
+    } else if (error) {
+      this.salutations = undefined;
+      this.initError('Failed to load salutations!');
+    }
+    this.loading = false;
+  }
+
+  @wire(getPicklistValues,
+    {
+      recordTypeId: '$contactInfo.data.defaultRecordTypeId',
+      fieldApiName: COUNTRY_FIELD
+    })
+  wiredCountries({ error, data }) {
+    if (data) {
+      data.values.forEach(item => {
+        this.countries = [...this.countries, { label: item.label, value: item.value }]
+      })
+    } else if (error) {
+      this.countries = undefined;
+      this.initError('Failed to load countries!');
     }
   }
 
-  connectedCallback() {
-    this.getCampaigns();
-    this.getSalutations();
-    this.getCountries();
-    this.getLanguages();
-    this.donationData.hasOwnProperty('PostalCode') && this.donationData.hasOwnProperty('City')
-      ? this.fillCities(this.donationData.PostalCode.value, this.donationData.City.value) : null;
-    this.postalCodePattern = this.comboboxes.Country === this.defaultCountry ? '[0-9]*' : null;
+  @wire(getLanguageList)
+  wiredLanguages({ error, data }) {
+    if (data) {
+      Object.keys(data).forEach((key) => {
+        this.languages = [...this.languages, { label: key, value: key }]
+      })
+    } else if (error) {
+      this.languages = undefined;
+      this.initError('Failed to load languages!');
+    }
   }
 
-  getCampaigns() {
-    getCampaignList()
-      .then(result => {
-        if (result) {
-          result.forEach((item) => {
-            this.campaigns = [...this.campaigns, { label: item['Name'], value: item['Id'] }];
-          })
-        }
+  @wire(getCampaignList)
+  wiredCampaigns({ error, data }) {
+    if (data) {
+      data.forEach((item) => {
+        this.campaigns = [...this.campaigns, { label: item['Name'], value: item['Id'] }];
       })
-      .catch(error => console.error(error))
+    } else if (error) {
+      this.campaigns = undefined;
+      this.initError('Failed to load campaigns!');
+    }
   }
 
-  getLanguages() {
-    getLanguageList()
-      .then(result => {
-        if (result) {
-          Object.keys(result).forEach((key) => {
-            this.languages = [...this.languages, { label: key, value: key }]
-          })
+  @wire(getMapOfLabelsPerObject, { objectAPIName: 'CommunityDonation__c' })
+  wiredLabels({ error, data }) {
+    if (data) {
+      if (Object.keys(data).length > 0) {
+        Object.keys(data).forEach(key => {
+          this.labels[data[key].replaceAll(" ", "")] = data[key]
+          this.donationData[data[key].replaceAll(" ", "")] = '';
+        })
+        if (this.donationData.hasOwnProperty('Country')) {
+          this.donationData.Country = this.defaultCountry;
+          this.postalCodePattern = '[0-9]*';
         }
-      })
-      .catch(error => console.error(error))
-  }
-
-  getSalutations() {
-    getSalutationList()
-      .then(result => {
-        if (result) {
-          Object.keys(result).forEach((key) => {
-            this.salutations = [...this.salutations, { label: key, value: result[key] }]
-          })
-        }
-      })
-      .catch(error => { console.error(error) })
-  }
-
-  getCountries() {
-    getCountryList()
-      .then(result => {
-        if (result) {
-          Object.keys(result).forEach((key) => {
-            let country = result[key].includes(',')
-              ? result[key].substring(0, result[key].indexOf(','))
-              : result[key]
-            this.countries = [...this.countries, {
-              label: country,
-              value: key
-            }]
-          })
-        }
-      })
-      .catch(error => console.error(error))
+      }
+    } else if (error) {
+      this.labels = undefined;
+      this.donationData = undefined;
+      this.initError('Failed to load labels!');
+    }
   }
 
   postalCodeEnter(e) {
     var value = e.target.value;
+    this.cities = [];
     if (value) {
       this.fillCities(value)
-    } else {
-      this.cities = [];
-      this.comboboxes.City = '';
     }
   }
 
@@ -171,39 +150,42 @@ export default class DonationForm extends NavigationMixin(LightningElement) {
     this.allCities.forEach((city) => {
       let startCode = city.postalCode.start.substring(0, 2);
       let endCode = city.postalCode.last.substring(0, 2);
+
       if (postalCode.includes(startCode) || postalCode.includes(endCode)) {
+        console.log(city)
         this.cities = [...this.cities, city];
-        this.comboboxes.City = choosenCity ? choosenCity : city.value;
+        this.donationData.City = choosenCity ? choosenCity : city.value;
       }
     })
   }
 
   campaignChanged(e) {
-    this.comboboxes.Campaign = e.detail.value;
+    this.donationData.Campaign = e.detail.value;
   }
 
   languageChanged(e) {
-    this.comboboxes.Language = e.detail.value;
+    this.donationData.Language = e.detail.value;
   }
 
   salutationChanged(e) {
-    this.comboboxes.Salutation = e.detail.value;
+    this.donationData.Salutation = e.detail.value;
   }
 
   countryChanged(e) {
-    this.comboboxes.Country = e.detail.value;
-    this.postalCodePattern = this.comboboxes.Country === this.defaultCountry ? '[0-9]*' : null;
+    this.donationData.Country = e.detail.value;
+    this.postalCodePattern = this.defaultCountry === this.donationData.Country ? '[0-9]*' : null;
   }
 
-  validateFields() {
-    let isValid = true;
-    let requiredFields = this.template.querySelectorAll('.form-field');
+  createDonation(e) {
+    e.preventDefault();
+    this.validateFields()
+    this.validated ? this.readFields() : null;
+  }
 
-    requiredFields.forEach(field => {
-      if (!field.checkValidity()) {
-        field.reportValidity();
-        isValid = false;
-      }
+  readFields() {
+    let formFields = this.template.querySelectorAll('.form-field');
+
+    formFields.forEach(field => {
       let isChkbx = field.type === 'checkbox';
       let cmbxValueLabel = field.outerText.replace(/[&\/\\*]/g, "");
       let valueLabel = isChkbx ? field.checked ? 'yes' : 'no' : cmbxValueLabel;
@@ -213,34 +195,57 @@ export default class DonationForm extends NavigationMixin(LightningElement) {
         value: isChkbx ? field.checked : field.value,
         valueLabel: valueLabel
       }
+    })
+  }
+
+  validateFields() {
+    let isValid = true;
+    let requiredFields = this.template.querySelectorAll('.required-field');
+
+    requiredFields.forEach(field => {
+      if (!field.checkValidity()) {
+        field.reportValidity();
+        isValid = false;
+      }
     });
-    return isValid;
+    this.validated = isValid;
+  }
+
+  cancelHandler(e) {
+    this.validated = e.detail.validated
+    this.cities = [];
+    Object.keys(this.donationData).forEach(key => {
+      this.donationData[key] = key === 'Country' ? this.defaultCountry : '';
+    })
+  }
+
+  returnHandler(e) {
+    this.validated = e.detail.validated
+    this.fillFields();
   }
 
   fillFields() {
     if (Object.keys(this.donationData).length !== 0) {
-      let requiredFields = this.template.querySelectorAll('.form-field')
-      requiredFields.forEach(field => {
-        let prop = field.id.replace(/[^a-zA-Z]/g, "");
-        field.value = this.donationData[prop].value;
+      Object.keys(this.donationData).forEach(key => {
+        this.donationData[key] = this.donationData[key].hasOwnProperty('value')
+          ? this.donationData[key].value : '';
       });
     }
   }
 
-  createDonation(e) {
-    e.preventDefault();
-    if (this.validateFields()) {
-      localStorage.setItem('Donation', JSON.stringify(this.donationData));
-      this.navigateToValidationForm();
-    }
+  showToastMessage(title, message, variant) {
+    const event = new ShowToastEvent({
+      title: title,
+      message: message,
+      variant: variant
+    })
+    this.dispatchEvent(event)
   }
 
-  navigateToValidationForm() {
-    this[NavigationMixin.Navigate]({
-      type: "comm__namedPage",
-      attributes: {
-        name: 'validation_screen__c'
-      }
-    });
+  initError(message) {
+    console.error(message);
+    this.showToastMessage('Error', message, 'error');
   }
 }
+
+

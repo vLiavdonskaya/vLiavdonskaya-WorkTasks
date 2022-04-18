@@ -1,79 +1,84 @@
 <template>
-    <div if:true={donationData} style="min-width: 480px">
+    <div if:true={loading}>
+        <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+    </div>
+    <div if:true={previewDonation}>
         <div class="slds-grid">
             <div class="slds-col">
                 <label class="slds-form-element__label">{labels.Amount}</label>
-                <span>{donationData.Amount.valueLabel}</span>
+                <span>{previewDonation.Amount.valueLabel}</span>
             </div>
             <div class="slds-col">
                 <label class="slds-form-element__label">{labels.Campaign}</label>
-                <span>{donationData.Campaign.valueLabel}</span>
+                <span>{previewDonation.Campaign.valueLabel}</span>
             </div>
             <div class="slds-col">
                 <label class="slds-form-element__label">{labels.Language}</label>
-                <span>{donationData.Language.valueLabel}</span>
+                <span>{previewDonation.Language.valueLabel}</span>
             </div>
         </div>
         <hr class="section-divider">
         <div class="slds-grid slds-grid_vertical">
             <div class="slds-col">
                 <label class="slds-form-element__label">{labels.Salutation}</label>
-                <span>{donationData.Salutation.valueLabel}</span>
+                <span>{previewDonation.Salutation.valueLabel}</span>
             </div>
-            <div if:true={donationData.CompanyName.valueLabel} class="slds-col">
+            <div if:true={previewDonation.CompanyName.valueLabel} class="slds-col">
                 <label class="slds-form-element__label">{labels.CompanyName}</label>
-                <span>{donationData.CompanyName.valueLabel}</span>
+                <span>{previewDonation.CompanyName.valueLabel}</span>
             </div>
             <div class="slds-col">
                 <label class="slds-form-element__label">{labels.FirstName}</label>
-                <span>{donationData.FirstName.valueLabel}</span>
+                <span>{previewDonation.FirstName.valueLabel}</span>
             </div>
             <div class="slds-col">
                 <label class="slds-form-element__label">{labels.LastName}</label>
-                <span>{donationData.LastName.valueLabel}</span>
+                <span>{previewDonation.LastName.valueLabel}</span>
             </div>
             <div class="slds-col">
                 <label class="slds-form-element__label">{labels.Street}</label>
-                <span>{donationData.Street.valueLabel}</span>
+                <span>{previewDonation.Street.valueLabel}</span>
             </div>
-            <div if:true={donationData.PostalCodeComplement.valueLabel} class="slds-col">
+            <div if:true={previewDonation.PostalCodeComplement.valueLabel} class="slds-col">
                 <label class="slds-form-element__label">{labels.PostalCodeComplement}</label>
-                <span>{donationData.PostalCodeComplement.valueLabel}</span>
+                <span>{previewDonation.PostalCodeComplement.valueLabel}</span>
             </div>
             <div class="slds-col">
                 <label class="slds-form-element__label">{labels.PostalCode}</label>
-                <span>{donationData.PostalCode.valueLabel}</span>
+                <span>{previewDonation.PostalCode.valueLabel}</span>
             </div>
             <div class="slds-col">
                 <label class="slds-form-element__label">{labels.City}</label>
-                <span>{donationData.City.valueLabel}</span>
+                <span>{previewDonation.City.valueLabel}</span>
             </div>
             <div class="slds-col">
                 <label class="slds-form-element__label">{labels.Country}</label>
-                <span>{donationData.Country.valueLabel}</span>
+                <span>{previewDonation.Country.valueLabel}</span>
             </div>
         </div>
         <hr class="section-divider">
         <div class="slds-grid slds-grid_vertical">
-            <div if:true={donationData.SubscribeToNewsletter.valueLabel} class="slds-col">
+            <div if:true={previewDonation.SubscribeToNewsletter.valueLabel} class="slds-col">
                 <label class="slds-form-element__label">{labels.SubscribeToNewsletter}</label>
-                <span>{donationData.SubscribeToNewsletter.valueLabel}</span>
+                <span>{previewDonation.SubscribeToNewsletter.valueLabel}</span>
             </div>
-            <div if:true={donationData.Email.valueLabel} class="slds-col">
+            <div if:true={previewDonation.Email.valueLabel} class="slds-col">
                 <label class="slds-form-element__label">{labels.Email}</label>
-                <span>{donationData.Email.valueLabel}</span>
+                <span>{previewDonation.Email.valueLabel}</span>
             </div>
-            <div if:true={donationData.Phone.valueLabel} class="slds-col">
+            <div if:true={previewDonation.Phone.valueLabel} class="slds-col">
                 <label class="slds-form-element__label">{labels.Phone}</label>
-                <span>{donationData.Phone.valueLabel}</span>
+                <span>{previewDonation.Phone.valueLabel}</span>
             </div>
         </div>
         <div class="slds-grid slds-m-top_medium">
             <div>
-                <button class="slds-button slds-button_brand cancel main-button" onclick={cancelClick}>{labels.Cancel}</button>
+                <button class="slds-button slds-button_brand cancel main-button"
+                    onclick={cancelClick}>{customLabels.Cancel}</button>
             </div>
             <div class="slds-col_bump-left slds-m-right_medium">
-                <button class="slds-button slds-button_brand return main-button" onclick={returnClick}>{labels.Return}</button>
+                <button class="slds-button slds-button_brand return main-button"
+                    onclick={returnClick}>{customLabels.Return}</button>
             </div>
             <div if:true={loadingValidation} class="spinnerHolder">
                 <div style="background-color: transparent" class="slds-spinner_container slds-align_absolute-center">
@@ -86,7 +91,7 @@
             </div>
             <div>
                 <button class="slds-button slds-button_brand validate main-button"
-                    onclick={validateClick}>{labels.Validate}</button>
+                    onclick={validateClick}>{customLabels.Validate}</button>
             </div>
         </div>
     </div>
