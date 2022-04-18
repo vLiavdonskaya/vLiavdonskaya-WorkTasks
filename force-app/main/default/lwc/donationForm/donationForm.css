@@ -1,0 +1,36 @@
+.section-divider {
+    border-style: none;
+    border-bottom: 1px solid #c9c9c9;
+    margin: 2em 1em;
+    padding: 0;
+}
+
+.slds-button {
+    --slds-c-button-brand-color-background: #c32228;
+    --slds-c-button-brand-color-border: #c32228;
+    --slds-c-button-brand-color-background-hover: #c32228;
+    --slds-c-button-brand-color-border-hover: #c32228;
+    --slds-c-button-brand-color-background-active: #dd3c41;
+    --slds-c-button-color-border-active: #dd3c41;
+    --slds-c-button-shadow-focus: none;
+    --slds-c-button-radius-border: 5em;
+    font-weight: bold;
+    text-transform: uppercase;
+    width: 200px;
+    transition: all ease .5s;
+}
+
+lightning-input {
+    --slds-c-input-shadow-focus: none;
+    --slds-c-checkbox-shadow-focus: none;
+    --slds-c-checkbox-color-border-focus: #a7a7a7;
+    --slds-c-input-color-border-focus: #a7a7a7;
+    --slds-c-checkbox-color-border-checked: #808080;
+    --slds-c-checkbox-mark-color-foreground: #808080;
+    transition: all ease .3s;
+}
+
+:host {
+    --lwc-shadowButtonFocus: 0 0 3px none;
+    --lwc-colorBorderInputActive: #a7a7a7;
+}

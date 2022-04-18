@@ -1,0 +1,47 @@
+.section-divider {
+    border-style: none;
+    border-bottom: 1px solid #c9c9c9;
+    margin: 2em 1em;
+    padding: 0;
+}
+
+.slds-button {
+    --slds-c-button-shadow-focus: none;
+    --slds-c-button-radius-border: 5em;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: all ease .5s;
+}
+
+.cancel {
+    --slds-c-button-brand-color-background: #b1b1b1;
+    --slds-c-button-brand-color-border: #b1b1b1;
+    --slds-c-button-brand-color-background-hover: #7d7d7d;
+    --slds-c-button-brand-color-border-hover: #7d7d7d;
+    --slds-c-button-brand-color-background-active: #c9c9c9;
+    --slds-c-button-color-border-active: #c9c9c9;
+}
+
+.return {
+    --slds-c-button-brand-color-background: #7d7d7d;
+    --slds-c-button-brand-color-border: #7d7d7d;
+    --slds-c-button-brand-color-background-hover: #494949;
+    --slds-c-button-brand-color-border-hover: #494949;
+    --slds-c-button-brand-color-background-active: #b1b1b1;
+    --slds-c-button-color-border-active: #b1b1b1;
+}
+
+.validate {
+    --slds-c-button-brand-color-background: #c32228;
+    --slds-c-button-brand-color-border: #c32228;
+    --slds-c-button-brand-color-background-hover: #90191d;
+    --slds-c-button-brand-color-border-hover: #90191d;
+    --slds-c-button-brand-color-background-active: #dc262c;
+    --slds-c-button-color-border-active: #dc262c;
+}
+
+.spinnerHolder {
+    position: relative;
+    display: inline-block;
+    width: 30px;
+}
